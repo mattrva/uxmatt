@@ -1,0 +1,41 @@
+{
+  "name": "Matt Greisamer",
+  "shortName": "uxmatt",
+  "monogram": "MG",
+  "title": "UX Design & Research Leader",
+  "url": "https://uxmatt.com",
+  "email": "matt@uxmatt.com",
+  "location": "Richmond, VA",
+  "linkedin": "https://www.linkedin.com/in/matthew-greisamer-46944918/",
+  "resume": "/resume.pdf",
+
+  "hero": {
+    "eyebrow": "Matt Greisamer — UX Design & Research Leader",
+    "headline": "Research-led design leadership for complex B2B products.",
+    "intro": "I build and lead teams whose research changes what gets built, not only how it looks. 10+ years in UX, 7+ managing design and research teams."
+  },
+
+  "quote": {
+    "label": "Team standard",
+    "text": "Understand the user better than anyone, the product nearly as well as the PMs, and the technology nearly as well as the developers."
+  },
+
+  "method": [
+    { "step": "Listen", "text": "Interviews, advisory boards and field research before a pixel moves." },
+    { "step": "Frame", "text": "Personas, journey maps and a shared problem statement with Product." },
+    { "step": "Systemize", "text": "Design systems so teams spend time on problems, not pixels." },
+    { "step": "Grow people", "text": "Servant leadership: designers and researchers become product leaders." }
+  ],
+
+  "experience": [
+    { "company": "Finvi", "role": "Manager, UX Research & Design", "dates": "Feb 2022 – Now", "current": true },
+    { "company": "The CoStar Group", "role": "Manager, UX Design", "dates": "2019 – 2022" },
+    { "company": "EAB", "role": "Sr. UX Designer", "dates": "2016 – 2019" },
+    { "company": "Genworth · Capital One", "role": "Digital Designer", "dates": "2014 – 2016" }
+  ],
+
+  "contact": {
+    "headline": "Got a hard problem and a team to build?",
+    "highlight": "Let's talk."
+  }
+}
