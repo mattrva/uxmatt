@@ -1,6 +1,6 @@
-import { escapeHtml as e } from './markdown.mjs';
+import { escapeHtml as e, imagePlaceholder } from './markdown.mjs';
 
-const BASE_FONTS = 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap';
+const BASE_FONTS = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap';
 
 const arrow = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
@@ -18,6 +18,8 @@ export function themeStyle(data = {}) {
   const decls = Object.entries(THEME_VARS)
     .filter(([key]) => data[key] !== undefined && data[key] !== '')
     .map(([key, v]) => `${v}: ${String(data[key]).replace(/[;{}<>]/g, '')};`);
+  // Editions echo their own accent in the background fog instead of the default warm colors.
+  if (data.accent) decls.push(`--fog-1: ${String(data.accent).replace(/[;{}<>]/g, '')}; --fog-2: var(--fog-1); --fog-3: var(--fog-1);`);
   return decls.length ? `<style>:root{${decls.join(' ')}}</style>` : '';
 }
 
@@ -50,11 +52,11 @@ ${body.banner || ''}
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="${e(brandHref)}"><span class="brand-mark" aria-hidden="true">${e(site.monogram)}</span>${e(site.shortName)}</a>
-    <nav class="nav" aria-label="Primary">
-      <a href="${nav}#work">/work</a>
-      <a href="${nav}#method">/method</a>
-      <a href="${nav}#path">/path</a>
-      <a href="#contact">/contact</a>
+    <nav class="nav" aria-label="Primary" data-spy>
+      <a href="${nav}#work">Work</a>
+      <a href="${nav}#method">How I work</a>
+      <a href="${nav}#path">Experience</a>
+      <a href="#contact">Contact</a>
     </nav>
   </div>
 </header>
@@ -62,6 +64,27 @@ ${body.banner || ''}
 ${body.main}
 </main>
 ${footer(site, body.contact)}
+<script>
+// Marks the section you're reading in the header nav and the case study contents.
+(() => {
+  const groups = [...document.querySelectorAll('[data-spy]')].map((nav) =>
+    [...nav.querySelectorAll('a[href^="#"]')].map((link) => [link, document.getElementById(link.hash.slice(1))]).filter(([, target]) => target));
+  const update = () => {
+    const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+    for (const items of groups) {
+      let current = atEnd ? items.at(-1) : undefined;
+      if (!atEnd) for (const item of items) if (item[1].getBoundingClientRect().top <= innerHeight * 0.4) current = item;
+      for (const item of items) {
+        if (item === current) item[0].setAttribute('aria-current', 'location');
+        else item[0].removeAttribute('aria-current');
+      }
+    }
+  };
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+})();
+</script>
 </body>
 </html>
 `;
@@ -75,6 +98,7 @@ function footer(site, contact = {}) {
   const linkedin = /^https?:/.test(site.linkedin);
   return `<footer class="site-footer" id="contact">
   <div class="wrap">
+    <p class="footer-label">Contact</p>
     <h2>${e(headline)} <span>${e(highlight)}</span></h2>
     <div class="btns">
       <a class="btn btn-primary" href="${e(mailto)}">${e(site.email)}</a>
@@ -87,16 +111,15 @@ function footer(site, contact = {}) {
 }
 
 export function card(cs) {
-  const media = cs.image
-    ? `<div class="card-media"><img src="${e(cs.image)}" alt="${e(cs.imageAlt || '')}" loading="lazy"></div>`
-    : '';
+  const media = `<div class="card-media">${cs.image ? `<img src="${e(cs.image)}" alt="${e(cs.imageAlt || '')}" loading="lazy">` : imagePlaceholder()}</div>`;
   return `<a class="card" href="/work/${e(cs.slug)}/">
   ${media}
   <div class="card-body">
     <p class="card-kicker">${e(cs.category)} · ${e(cs.company)}${cs.sample ? ' <span class="sample-tag">Sample</span>' : ''}</p>
     <h3>${e(cs.cardTitle || cs.title)}</h3>
     <p class="card-summary">${e(cs.summary)}</p>
-    ${cs.outcome ? `<p class="card-outcome">Outcome: ${e(cs.outcome)}</p>` : ''}
+    ${cs.outcome ? `<p class="card-outcome"><strong>Outcome:</strong> ${e(cs.outcome)}</p>` : ''}
+    <span class="card-cta">Read case study ${arrow}</span>
   </div>
 </a>`;
 }
@@ -109,24 +132,27 @@ function quoteCard(site) {
 }
 
 function methodSection(site) {
-  return `<section class="section" id="method"><div class="wrap">
-  <div class="section-head"><h2>Method</h2></div>
-  <ol class="method">
-    ${site.method.map((m, i) => `<li><span class="step">${String(i + 1).padStart(2, '0')} — ${e(m.step)}</span><span class="text">${e(m.text)}</span></li>`).join('\n    ')}
-  </ol>
+  return `<section class="section section-alt" id="method"><div class="wrap">
+  <div class="section-head"><h2>How I work</h2><p>From first interview to a stronger team.</p></div>
+  <div class="method-body">
+    ${quoteCard(site)}
+    <ol class="method">
+      ${site.method.map((m) => `<li><span class="step">${e(m.step)}</span><span class="text">${e(m.text)}</span></li>`).join('\n      ')}
+    </ol>
+  </div>
 </div></section>`;
 }
 
 function pathSection(site) {
   return `<section class="section" id="path"><div class="wrap">
-  <div class="section-head"><h2>Path</h2>${site.hasResume ? `<p><a href="${e(site.resume)}">Full résumé (PDF)</a></p>` : ''}</div>
+  <div class="section-head"><h2>Experience</h2><p>10+ years in UX, 7+ managing design and research teams.</p>${site.hasResume ? `<p><a href="${e(site.resume)}">Full résumé (PDF)</a></p>` : ''}</div>
   <div class="path">
-    ${site.experience.map((x) => `<div class="path-item${x.current ? ' current' : ''}"><p class="when">${e(x.current ? 'Now' : x.dates)}</p><p class="co">${e(x.company)}</p><p class="role">${e(x.role)}</p></div>`).join('\n    ')}
+    ${site.experience.map((x) => `<div class="path-item${x.current ? ' current' : ''}"><p class="co">${e(x.company)}</p><p class="role">${e(x.role)}</p><p class="when">${e(x.dates)}</p></div>`).join('\n    ')}
   </div>
 </div></section>`;
 }
 
-function workSection(caseStudies, heading = 'Case studies', note = 'problem → research → decision → outcome') {
+function workSection(caseStudies, heading = 'Work', note = 'Each case study covers the problem, what we did and the outcome.') {
   return `<section class="section" id="work"><div class="wrap">
   <div class="section-head"><h2>${e(heading)}</h2><p>${e(note)}</p></div>
   <div class="cards">
@@ -137,13 +163,17 @@ function workSection(caseStudies, heading = 'Case studies', note = 'problem → 
 
 export function homePage(site, caseStudies) {
   return {
-    main: `<section class="hero"><div class="wrap">
+    main: `<section class="hero hero-home"><div class="wrap">
+  <figure class="portrait"><img src="/images/matt.jpg" width="800" height="800" alt="Portrait of Matt Greisamer"></figure>
   <div class="hero-main">
     <p class="eyebrow">${e(site.hero.eyebrow)}</p>
     <h1>${e(site.hero.headline)}</h1>
     <p class="hero-intro">${e(site.hero.intro)}</p>
+    <div class="btns hero-actions">
+      <a class="btn btn-primary" href="#work">See my work ${arrow}</a>
+      <a class="btn btn-ghost" href="#contact">Get in touch</a>
+    </div>
   </div>
-  ${quoteCard(site)}
 </div></section>
 ${workSection(caseStudies)}
 ${methodSection(site)}
@@ -155,8 +185,9 @@ export function caseStudyPage(site, cs, next) {
   const meta = [
     ['Company', cs.company], ['My role', cs.role], ['When', cs.years], ['Focus', cs.category],
   ].filter(([, v]) => v);
+  const contents = [...cs.html.matchAll(/<h2 id="([^"]+)">(.*?)<\/h2>/g)];
   return {
-    main: `<section class="cs-hero"><div class="wrap">
+    main: `<section class="cs-hero"><div class="wrap cs-col">
   <a class="back" href="/#work">← All case studies</a>
   ${cs.sample ? '<p class="sample-note">Sample content: this case study is a placeholder and will be replaced with the full story.</p>' : ''}
   <p class="eyebrow">${e(cs.category)} · ${e(cs.company)}</p>
@@ -166,11 +197,17 @@ export function caseStudyPage(site, cs, next) {
     ${meta.map(([k, v]) => `<div><dt>${e(k)}</dt><dd>${e(v)}</dd></div>`).join('\n    ')}
   </dl>
 </div></section>
-${cs.image ? `<div class="wrap cs-cover"><img src="${e(cs.image)}" alt="${e(cs.imageAlt || '')}"></div>` : ''}
-<article class="wrap"><div class="prose">
+<div class="wrap cs-col cs-cover">${cs.image ? `<img src="${e(cs.image)}" alt="${e(cs.imageAlt || '')}">` : imagePlaceholder(cs.imageHint || cs.title)}</div>
+<div class="wrap cs-body">
+  <nav class="contents" aria-label="On this page" data-spy>
+    <p>On this page</p>
+    <ul>${contents.map(([, id, label]) => `<li><a href="#${id}">${label}</a></li>`).join('')}</ul>
+  </nav>
+  <article class="prose">
 ${cs.html}
-</div></article>
-${next ? `<div class="wrap section"><a class="next-cs" href="/work/${e(next.slug)}/"><span class="label">Next case study</span><span class="t">${e(next.cardTitle || next.title)} ${arrow}</span></a></div>` : ''}`,
+  </article>
+</div>
+${next ? `<div class="wrap cs-col cs-next"><a class="next-cs" href="/work/${e(next.slug)}/"><span class="label">Next case study</span><span class="t">${e(next.cardTitle || next.title)} ${arrow}</span></a></div>` : ''}`,
   };
 }
 
@@ -192,7 +229,7 @@ export function editionPage(site, ed, caseStudies) {
     <p class="eyebrow">${e(site.name)} → ${e(ed.company)}</p>
     <h1>${e(ed.headline)}</h1>
     <p class="hero-intro">${e(ed.intro)}</p>
-    <div class="btns" style="margin-top:32px">
+    <div class="btns hero-actions">
       <a class="btn btn-primary" href="#fit">Why I fit ${arrow}</a>
       ${ed.posting ? `<a class="btn btn-ghost" href="${e(ed.posting)}" rel="noopener">The role</a>` : ''}
     </div>
@@ -200,11 +237,11 @@ export function editionPage(site, ed, caseStudies) {
   ${quoteCard(site)}
 </div></section>
 ${fit.length ? `<section class="section" id="fit"><div class="wrap">
-  <div class="section-head"><h2>What you need → what I bring</h2><p>from the ${e(ed.role)} posting</p></div>
+  <div class="section-head"><h2>What you need → what I bring</h2><p>From the ${e(ed.role)} posting.</p></div>
   <div class="fit">${fit.join('')}</div>
 </div></section>` : ''}
-${ed.html.trim() ? `<section class="section"><div class="wrap"><div class="section-head"><h2>${e(ed.bodyHeading || 'How I would approach the role')}</h2></div><div class="prose" style="padding-bottom:0">${ed.html}</div></div></section>` : ''}
-${workSection(caseStudies, 'Relevant work', `chosen for ${ed.company}`)}
+${ed.html.trim() ? `<section class="section section-alt"><div class="wrap"><div class="section-head"><h2>${e(ed.bodyHeading || 'How I would approach the role')}</h2></div><div class="prose" style="padding-bottom:0">${ed.html}</div></div></section>` : ''}
+${workSection(caseStudies, 'Relevant work', `Chosen for ${ed.company}.`)}
 <section class="section"><div class="wrap"><div class="ai-note"><h2>How this page was made</h2><p>${e(aiNote)}</p></div></div></section>`,
   };
 }

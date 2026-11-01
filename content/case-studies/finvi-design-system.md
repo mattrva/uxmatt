@@ -11,6 +11,7 @@ summary: Tokens and components that ease development and keep a multi-product su
 outcome: UI build time on new screens down roughly 40%, with one source of truth for design and code
 image:
 imageAlt:
+imageHint: The component library in Figma
 ---
 
 ## The problem
@@ -25,6 +26,8 @@ My team and I created a Figma-based design system, complete with variables, to e
 - **Prioritized by pain.** We audited the products and built the components that appeared most often and varied most: data tables, filters, form fields, status badges and page headers.
 - **Governance.** One designer and one engineer co-own the system. Contributions go through a short proposal template, and a monthly review keeps Figma and code in sync.
 - **Documentation in context.** Usage guidance and do/don't examples live next to each component, where designers already work.
+
+![placeholder: Figma variables with light and dark modes]
 
 ## The outcome
 

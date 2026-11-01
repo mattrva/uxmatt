@@ -56,6 +56,7 @@ async function main() {
   for (const cs of caseStudies) {
     checkPlaceholders(`content/case-studies/${cs.file}`, cs.raw);
     if (cs.sample) notes.push(`Sample content: content/case-studies/${cs.file} (remove "sample: true" once it's real)`);
+    if (!cs.image) warnings.push(`content/case-studies/${cs.file}: no image (set image: and imageAlt:)`);
   }
   for (const ed of editions) {
     checkPlaceholders(`content/companies/${ed.file}`, ed.raw);

@@ -1,6 +1,6 @@
 // Tiny, dependency-free Markdown + frontmatter parser.
 // Supports: ## / ### headings, paragraphs, - and 1. lists, > quotes,
-// ![images](src), [links](href), **bold**, *italic*, `code`, and ---.
+// ![images](src), ![placeholder: what goes here], [links](href), **bold**, *italic*, `code`, and ---.
 
 export function escapeHtml(s = '') {
   return String(s)
@@ -8,6 +8,14 @@ export function escapeHtml(s = '') {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// Wireframe box that holds a spot for an image still to come.
+export function imagePlaceholder(hint = '') {
+  return `<div class="img-placeholder"${hint ? ` role="img" aria-label="Image placeholder: ${escapeHtml(hint)}"` : ' aria-hidden="true"'}>
+  <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0L100 100M100 0L0 100" vector-effect="non-scaling-stroke"/></svg>
+  <span class="img-placeholder-label">Image placeholder${hint ? `<small>${escapeHtml(hint)}</small>` : ''}</span>
+</div>`;
 }
 
 function inline(text) {
@@ -52,7 +60,8 @@ export function markdown(src = '') {
     if ((m = line.match(/^(#{1,4})\s+(.*)$/))) {
       flushAll();
       const level = Math.min(Math.max(m[1].length, 2), 4);
-      out.push(`<h${level}>${inline(m[2])}</h${level}>`);
+      const id = level === 2 ? ` id="${m[2].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}"` : '';
+      out.push(`<h${level}${id}>${inline(m[2])}</h${level}>`);
       continue;
     }
     if (/^---+$/.test(line)) { flushAll(); out.push('<hr>'); continue; }
@@ -67,6 +76,11 @@ export function markdown(src = '') {
       flushPara(); flushQuote();
       if (!list || list.type !== 'ol') { flushList(); list = { type: 'ol', items: [] }; }
       list.items.push(m[1]);
+      continue;
+    }
+    if ((m = line.match(/^!\[placeholder:\s*([^\]]*)\]$/))) {
+      flushAll();
+      out.push(`<figure>${imagePlaceholder(m[1])}</figure>`);
       continue;
     }
     if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/))) {
