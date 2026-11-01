@@ -11,6 +11,7 @@ summary: Executives from our most valued clients, across multiple business lines
 outcome: 3 of the top 5 roadmap items in the following year came directly from board sessions
 image:
 imageAlt:
+imageHint: A board session or the roadmap it shaped
 ---
 
 ## The problem
@@ -27,6 +28,8 @@ We built a research practice around Client Advisory Board meetings with the exec
 - **Connection to day-to-day research.** Board themes become hypotheses we test with end users. End-user findings come back to the board as concepts, so both conversations inform each other.
 
 > The board changed the question from "what did sales promise?" to "what do our best clients need next year?"
+
+![placeholder: Session artifacts: notes, themes or prioritized requirements]
 
 ## The outcome
 

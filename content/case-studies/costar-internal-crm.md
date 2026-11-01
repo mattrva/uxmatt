@@ -11,6 +11,7 @@ summary: Interviews, journey maps and a new design system behind an internal too
 outcome: Replaced several legacy tools, and common sales tasks took far fewer clicks
 image:
 imageAlt:
+imageHint: The main screen of the unified CRM
 ---
 
 ## The problem
@@ -24,6 +25,8 @@ I led UX for the internal CRM, working closely with Engineering, Product and bus
 - Conducted user interviews and created journey maps, personas and wireframes
 - Grew the team's maturity by creating a design system, increasing research and adding process management
 - Evangelized UX across the company, increasing its involvement in product development
+
+![placeholder: A journey map from the interviews]
 
 ## The outcome
 

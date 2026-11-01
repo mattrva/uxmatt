@@ -11,6 +11,7 @@ summary: Hiring, rituals, and a research practice whose remit keeps growing beca
 outcome: Grew from 1 to a team of 6 designers and researchers, now embedded in every product line
 image:
 imageAlt:
+imageHint: The team at work
 ---
 
 ## The starting point
@@ -24,6 +25,8 @@ I created the UX department and lead it today. The team creates high-level desig
 - **Hiring.** I started with a senior product designer and a UX researcher, then added designers aligned to product lines so each team has a dedicated partner.
 - **Rituals.** Weekly critique, a monthly research share open to the whole company, and joint planning with Product before each quarter.
 - **Growing people.** Every designer and researcher has a growth plan built around leading work, not just doing it: running a research study, presenting to executives, or mentoring a newer teammate.
+
+![placeholder: How the team maps to the product lines]
 
 ## The outcome
 

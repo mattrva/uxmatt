@@ -24,7 +24,7 @@ Full background, decisions and research are in `docs/project-history.md`.
 | Path | What it is |
 |---|---|
 | `content/site.json` | Profile, hero, team-standard quote, method, experience, contact |
-| `content/case-studies/*.md` | One case study per file. Frontmatter: `title, cardTitle, company, category, role, years, order, summary, outcome, image, imageAlt, sample, draft` |
+| `content/case-studies/*.md` | One case study per file. Frontmatter: `title, cardTitle, company, category, role, years, order, summary, outcome, image, imageAlt, imageHint, sample, draft`. With no `image`, the card and cover show a wireframe placeholder and `imageHint` says what belongs there. `![placeholder: what goes here]` holds a spot in the body. `npm run check` lists both |
 | `content/companies/*.md` | Company pages. `_template.md` documents every field. Files starting with `_` are skipped |
 | `public/` | Copied to the site as-is: `favicon.svg`, `images/`, and `resume.pdf` once it exists |
 | `src/site.css` | Field Notes styles. Every color and font is a CSS custom property, and company pages override them |
